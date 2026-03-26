@@ -1,0 +1,19 @@
+Task name,Description,Assignee,Priority,Start date,Due date,Hours,Phase,Status
+P1.1: Daily loss cutoff enforcement (-1.5%),Implement -1.5% daily loss stop. When balance drops 1.5% halt all trading until next day. Test with backtest + testnet.,me,high,2026-03-26,2026-03-29,3,P1,To Do
+P1.2: Per-trade risk validation (1% capital),Calculate risk per trade: (ATR×SL_mult) × position_size ≤ 1% capital. Reject trades exceeding limit. Enforce before Bybit order creation.,me,high,2026-03-26,2026-03-29,2,P1,To Do
+P1.3: Max exposure check (5% capital),Track open position notional value. Prevent new entries if total exposure >5% capital. Real-time validator.,me,high,2026-03-26,2026-03-30,2,P1,To Do
+P1.4: Auto SL at order creation (ATR×1.5),Every Bybit limit order must include SL immediately (ATR×1.5). Use OCO orders. Verify in Bybit history.,me,high,2026-03-26,2026-03-28,2,P1,To Do
+P2.1: Triple-stage TP logic (Stage 1: 50% @ 0.4%),On entry open OCO with: Stage 1: Sell 50% @ entry+0.4%. Remaining 50% stays for stage 2. Use Bybit OCO API.,me,high,2026-03-27,2026-04-01,3,P2,To Do
+P2.2: Triple-stage TP logic (Stage 2: 40% @ 0.8%),When stage 1 fills create new order: Stage 2: Sell 40% @ entry+0.8%. Remaining 10% for trailing.,me,high,2026-03-28,2026-04-01,3,P2,To Do
+P2.3: Triple-stage TP logic (Stage 3: 10% trailing),Final 10% position: trailing stop @ ATR×0.5. Adjust trailing stop every 5 candles if price moves up.,me,high,2026-03-29,2026-04-02,3,P2,To Do
+P3.1: Real-time trade logging (SQLite),Log every trade to SQLite: entry_time entry_price pair side SL TP_targets exit_time exit_price PnL status. Persistent storage.,me,high,2026-03-26,2026-03-30,3,P3,To Do
+P3.2: Win rate tracking (closed trades only),Query SQLite: count(closed trades with PnL>0) / count(all closed trades). Update every 60 seconds. Display as metric.,me,high,2026-03-27,2026-03-31,2,P3,To Do
+P3.3: Profit Factor calculation,PF = sum(winning trades) / abs(sum(losing trades)). Target: >1.5. Update real-time from SQLite.,me,high,2026-03-27,2026-03-31,1,P3,To Do
+P3.4: HTML dashboard live feed (WebSocket),Dashboard pulls from SQLite via WebSocket every 10s. Show: WR% PF daily PnL drawdown trade count. No refresh needed.,me,high,2026-03-28,2026-04-02,4,P3,To Do
+Phase 1 testing & validation,Backtest all changes on 2019-2024 data. Run 24h on testnet. Verify SL accuracy TP fills risk enforcement. Gather logs.,me,high,2026-04-01,2026-04-02,4,P1,To Do
+P4.1: Kelly Criterion position sizing,Calculate optimal position size = (WR% × 2 - 1) / WR ÷ (1-WR). Apply Kelly × 0.25 (conservative). Dynamic sizing per trade.,me,medium,2026-04-03,2026-04-06,3,P4,To Do
+P4.2: Risk recycling (scale-in on winners),After TP stage 1 fills if momentum continues open 50% new position same direction (if exposure <5%). Recycle profits.,me,medium,2026-04-04,2026-04-07,3,P4,To Do
+P5.1: Win rate per pair (last 30 days),Calculate WR% for each pair from last 30 days closed trades. Query: SELECT pair count(PnL>0)/count(*) FROM trades WHERE date>30days_ago GROUP BY pair.,me,medium,2026-04-03,2026-04-05,2,P5,To Do
+P5.2: Profit Factor per pair,PF per pair = sum(wins) / abs(sum(losses)). Identify strong vs weak pairs. Exclude pairs with PF <1.2.,me,medium,2026-04-03,2026-04-05,1,P5,To Do
+P5.3: Volume & liquidity scoring,Score = (WR%×0.5 + PF×0.3 + Vol_score×0.15 + Liq_score×0.05). Get 24h volume from Bybit API. Min $50M volume threshold.,me,medium,2026-04-04,2026-04-06,2,P5,To Do
+P5.4: Top 10-15 pair selection logic,Rank all 25 pairs by score. Select top 10-15 for active trading. Update selection weekly based on metrics.,me,medium,2026-04-04,2026-04-06,2,P5,To Do
